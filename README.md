@@ -34,3 +34,23 @@ python3 join_coconut_sep2024.py \
   --results-sqlite coconut_paper3_626131_results.sqlite \
   --coconut-archive coconut-09-2024.csv.zip \
   --out-sqlite coconut_paper3_626131_joined.sqlite
+```
+
+The script verifies coconut-09-2024.csv.zip (MD5: 439fca469248b2eb5194ffb75ddf62ed) and inner coconut-09-2024.csv (SHA-256: 1900a3824324dec786c4b41b040cc39c02dcb985987fb8eb238c4857a7c1e49a), confirms an exact 626,131 / 626,131 one-to-one match on mol_id == identifier, checks the Paper 3 §3.3 C30H26O13 (594.137341 Da) constitutional isomer trio (CNP0244378.1 MA = 10, CNP0247789.1 MA = 18, CNP0042289.1 MA = 19; 111 UTF-8 SMILES bytes / 72 level-6 zlib bytes), and writes the indexed 5-column SQLite database (plus optional --out-parquet or --out-csv). See COLUMN_DICTIONARY.md for full verification scope and limitations.Checksums (SHA-256) & Table-Content DigestFileSize (Bytes)SHA-256coconut_paper3_626131_results.sqlite44,777,472ce5f002e388dd558839e50b11391dac600cd484761a39a7b4ffc7f6f567b9302coconut_paper3_626131_results.parquet3,881,452ecad65d4b429c8fbe16d7ca7979e663d8a7ec630cce0c1a00cb0f8d10e91346ajoin_coconut_sep2024.py11,121e3cf93beb23c060d223729ecd39d1dce856c3389ec611de7159f851dbef19341COLUMN_DICTIONARY.md4,7468eb5ef850af4ba1330606c78e4c0cb9834025c38aa240a74688ac0cd144625ceCanonical 3-Column Table-Content Digest (supplementary cross-format SQLite/Parquet parity check across all 626,131 × 3 = 1,878,393 cells; does not replace file hashes): baabda0c394b5a23531dce7ac27050ed15029b966a38504a961aed08e144a3fbLicensing & AttributionCompanion data tables & documentation: CC BY 4.0.Join script (join_coconut_sep2024.py): MIT License.Upstream CNP* identifier attribution (CC BY 4.0 Section 3(a)): mol_id values were adapted from coconut-09-2024.csv.zip (identifier filtered from 695,133 to 626,131 cohort records, renamed mol_id, stripped of structure columns, and paired with computed monoisotopic_mass and ma_joint_assembly columns) from the September 2024 release of COCONUT 2.0 (10.5281/zenodo.13692394; Chandrasekhar et al., Nucleic Acids Research, 2025, 53(D1), D634–D643, 10.1093/nar/gkae1063). Locally reconstructed smiles and standard_inchi_key columns remain subject to COCONUT 2.0 and its originating source collections' terms.Related preprintsPaper 1 · Process-Isolated Molecular Assembly Benchmarking (v3)Paper 2 · Molecular Assembly Enumeration vs. 1D Dictionary Compression (v1)
+---
+
+### 2. Stage Root Files Safely on Windows (Prevent Git `CRLF` Hash Drift)
+
+Git for Windows (`core.autocrlf=true`) will rewrite `LF` to `CRLF` on checkout unless `.gitattributes` locks `LF`, which would alter the SHA-256 hashes of `join_coconut_sep2024.py` and `COLUMN_DICTIONARY.md`. From inside your local `molecular-assembly-benchmarks` repo directory (with the Zenodo–GitHub webhook left **off**), run:
+
+```powershell
+# 1. Lock LF line endings so repo text files stay byte-identical to Zenodo/Kaggle
+[System.IO.File]::WriteAllBytes("$PWD\.gitattributes", [System.Text.Encoding]::UTF8.GetBytes("* text=auto eol=lf`n"))
+
+# 2. Copy the 3 lightweight companion files untouched (binaries stay on Zenodo & Kaggle)
+$Src = "D:\coconut_v2_run2\Preprint Validation\release_v1_coconut_626131_results_only"
+Copy-Item "$Src\COLUMN_DICTIONARY.md", "$Src\join_coconut_sep2024.py", "$Src\SHA256SUMS.txt" -Destination . -Force
+
+# 3. Verify hashes in the repo match Zenodo before committing
+python -c "import hashlib, pathlib; s=dict(l.split('  ')[::-1] for l in open('SHA256SUMS.txt')); [print(f, 'OK' if hashlib.sha256(pathlib.Path(f).read_bytes()).hexdigest()==s[f] else 'MISMATCH') for f in ('join_coconut_sep2024.py','COLUMN_DICTIONARY.md')]"
+```
