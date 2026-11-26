@@ -59,3 +59,4 @@ The script verifies `coconut-09-2024.csv.zip` (MD5: `439fca469248b2eb5194ffb75dd
 
 * **Paper 1:** Process-Isolated Molecular Assembly Benchmarking (v3) [https://doi.org/10.26434/chemrxiv.15004164/v3]
 * **Paper 2:** Molecular Assembly Enumeration vs. 1D Dictionary Compression (v1) [https://doi.org/10.26434/chemrxiv.15012530/v1]
+* **Paper 3:** Scale-Controlled Evaluation of Exact Molecular Assembly Index and Compression Baselines Across 626,131 Natural Products [https://doi.org/10.26434/chemrxiv.15012760/v1]
